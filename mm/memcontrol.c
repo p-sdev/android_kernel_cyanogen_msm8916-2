@@ -113,9 +113,6 @@ enum mem_cgroup_events_index {
 	MEM_CGROUP_EVENTS_PGPGOUT,	/* # of pages paged out */
 	MEM_CGROUP_EVENTS_PGFAULT,	/* # of page-faults */
 	MEM_CGROUP_EVENTS_PGMAJFAULT,	/* # of major page-faults */
-	MEM_CGROUP_EVENTS_PGMAJFAULT_S,	/* # of major shmem page-faults */
-	MEM_CGROUP_EVENTS_PGMAJFAULT_A,	/* # of major anonymous page-faults */
-	MEM_CGROUP_EVENTS_PGMAJFAULT_F,	/* # of major file page-faults */
 	MEM_CGROUP_EVENTS_NSTATS,
 };
 
@@ -124,9 +121,6 @@ static const char * const mem_cgroup_events_names[] = {
 	"pgpgout",
 	"pgfault",
 	"pgmajfault",
-	"pgmajfault_s",
-	"pgmajfault_a",
-	"pgmajfault_f",
 };
 
 static const char * const mem_cgroup_lru_names[] = {
@@ -1303,20 +1297,8 @@ void __mem_cgroup_count_vm_event(struct mm_struct *mm, enum vm_event_item idx)
 	case PGFAULT:
 		this_cpu_inc(memcg->stat->events[MEM_CGROUP_EVENTS_PGFAULT]);
 		break;
-	case PGMAJFAULT_S:
+	case PGMAJFAULT:
 		this_cpu_inc(memcg->stat->events[MEM_CGROUP_EVENTS_PGMAJFAULT]);
-		this_cpu_inc(memcg->stat->events[
-				     MEM_CGROUP_EVENTS_PGMAJFAULT_S]);
-		break;
-	case PGMAJFAULT_A:
-		this_cpu_inc(memcg->stat->events[MEM_CGROUP_EVENTS_PGMAJFAULT]);
-		this_cpu_inc(memcg->stat->events[
-				     MEM_CGROUP_EVENTS_PGMAJFAULT_A]);
-		break;
-	case PGMAJFAULT_F:
-		this_cpu_inc(memcg->stat->events[MEM_CGROUP_EVENTS_PGMAJFAULT]);
-		this_cpu_inc(memcg->stat->events[
-				     MEM_CGROUP_EVENTS_PGMAJFAULT_F]);
 		break;
 	default:
 		BUG();

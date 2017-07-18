@@ -55,9 +55,7 @@ char g_lcm_id[128];
 
 DEFINE_LED_TRIGGER(bl_led_trigger);
 
-#ifdef CONFIG_LAZYPLUG
-extern void lazyplug_enter_lazy(bool enter, bool video);
-#endif
+extern void lazyplug_enter_lazy(bool enter);
 
 bool display_on = true;
 
@@ -677,11 +675,6 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 		return -EINVAL;
 	}
 
-	display_on = true;
-#ifdef CONFIG_LAZYPLUG
-	lazyplug_enter_lazy(false, false);
-#endif
-	
 #ifdef CONFIG_MACH_T86519A1
 	gpio_set_value(TPS65132_GPIO_POS_EN, 1);
 	gpio_set_value(TPS65132_GPIO_NEG_EN, 1);
@@ -720,6 +713,9 @@ static int mdss_dsi_post_panel_on(struct mdss_panel_data *pdata)
 		pr_err("%s: Invalid input data\n", __func__);
 		return -EINVAL;
 	}
+
+	display_on = true;
+	lazyplug_enter_lazy(false);
 
 	ctrl = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
@@ -776,17 +772,10 @@ static int mdss_dsi_panel_off(struct mdss_panel_data *pdata)
 		mdss_dsi_panel_cmds_send(ctrl, &ctrl->off_cmds);
 
 	display_on = false;
-<<<<<<< HEAD
 	lazyplug_enter_lazy(true);
 #ifdef CONFIG_POWERSUSPEND
         set_power_suspend_state_panel_hook(POWER_SUSPEND_ACTIVE);
  #endif
-=======
-#ifdef CONFIG_LAZYPLUG
-	lazyplug_enter_lazy(true, false);
-#endif
-
->>>>>>> 1165248627edcb96edd78b299b7094c25d2c110e
 end:
 	pinfo->blank_state = MDSS_PANEL_BLANK_BLANK;
 	pr_debug("%s:-\n", __func__);

@@ -19,6 +19,8 @@
 #include "ext4_jbd2.h"
 #include "ext4.h"
 
+#define MAX_32_NUM ((((unsigned long long) 1) << 32) - 1)
+
 /**
  * Swap memory between @a and @b for @len bytes.
  *
